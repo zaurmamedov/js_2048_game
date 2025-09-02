@@ -23,21 +23,26 @@ class Game {
     this.initControls();
 
     document.addEventListener('keyup', (e) => {
-      if (e.code === 'ArrowLeft') {
-        this.moveLeft();
-        this.setTwo();
-      } else if (e.code === 'ArrowRight') {
-        this.moveRight();
-        this.setTwo();
-      } else if (e.code === 'ArrowUp') {
-        this.moveUp();
-        this.setTwo();
-      } else if (e.code === 'ArrowDown') {
-        this.moveDown();
-        this.setTwo();
+      let moved = false;
+
+      switch (e.code) {
+        case 'ArrowLeft':
+          moved = this.moveLeft();
+          break;
+        case 'ArrowRight':
+          moved = this.moveRight();
+          break;
+        case 'ArrowUp':
+          moved = this.moveUp();
+          break;
+        case 'ArrowDown':
+          moved = this.moveDown();
+          break;
       }
 
-      this.getScore();
+      if (moved) {
+        this.afterMove();
+      }
     });
   }
 
@@ -115,9 +120,7 @@ class Game {
       }
     }
 
-    if (moved) {
-      this.afterMove();
-    }
+    return moved;
   }
 
   moveRight() {
@@ -141,9 +144,7 @@ class Game {
       }
     }
 
-    if (moved) {
-      this.afterMove();
-    }
+    return moved;
   }
 
   moveUp() {
@@ -170,9 +171,7 @@ class Game {
       }
     }
 
-    if (moved) {
-      this.afterMove();
-    }
+    return moved;
   }
 
   moveDown() {
@@ -200,12 +199,13 @@ class Game {
       }
     }
 
-    if (moved) {
-      this.afterMove();
-    }
+    return moved;
   }
 
   afterMove() {
+    document.querySelector('.message-win').classList.add('hidden');
+    document.querySelector('.message-lose').classList.add('hidden');
+
     this.setTwo();
     this.getScore();
     this.getStatus();
