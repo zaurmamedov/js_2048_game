@@ -59,7 +59,6 @@ class Game {
     }
 
     this.setTwo();
-    this.setTwo();
   }
 
   updateTile(tile, num) {
@@ -97,93 +96,118 @@ class Game {
   }
 
   moveLeft() {
+    let moved = false;
+
     for (let r = 0; r < this.rows; r++) {
-      const row = this.board[r];
-      const newRow = this.slide(row);
+      const oldRow = [...this.board[r]];
+      const newRow = this.slide(oldRow);
 
       this.board[r] = newRow;
 
+      if (!moved && newRow.some((num, i) => num !== oldRow[i])) {
+        moved = true;
+      }
+
       for (let c = 0; c < this.columns; c++) {
         const tile = document.getElementById(`${r}-${c}`);
-        const num = this.board[r][c];
 
-        this.updateTile(tile, num);
+        this.updateTile(tile, newRow[c]);
       }
     }
 
-    this.getStatus();
+    if (moved) {
+      this.afterMove();
+    }
   }
 
   moveRight() {
+    let moved = false;
+
     for (let r = 0; r < this.rows; r++) {
-      const row = [...this.board[r]];
+      const oldRow = [...this.board[r]];
+      const reversed = [...oldRow].reverse();
+      const newRow = this.slide(reversed).reverse();
 
-      row.reverse();
-
-      const newRow = this.slide(row);
-
-      newRow.reverse();
       this.board[r] = newRow;
+
+      if (!moved && newRow.some((num, i) => num !== oldRow[i])) {
+        moved = true;
+      }
 
       for (let c = 0; c < this.columns; c++) {
         const tile = document.getElementById(`${r}-${c}`);
-        const num = this.board[r][c];
 
-        this.updateTile(tile, num);
+        this.updateTile(tile, newRow[c]);
       }
     }
 
-    this.getStatus();
+    if (moved) {
+      this.afterMove();
+    }
   }
 
   moveUp() {
-    for (let c = 0; c < this.columns; c++) {
-      let row = [
-        this.board[0][c],
-        this.board[1][c],
-        this.board[2][c],
-        this.board[3][c],
-      ];
+    let moved = false;
 
-      row = this.slide(row);
+    for (let c = 0; c < this.columns; c++) {
+      const oldCol = [];
 
       for (let r = 0; r < this.rows; r++) {
-        this.board[r][c] = row[r];
+        oldCol.push(this.board[r][c]);
+      }
+
+      const newCol = this.slide(oldCol);
+
+      for (let r = 0; r < this.rows; r++) {
+        if (!moved && this.board[r][c] !== newCol[r]) {
+          moved = true;
+        }
+        this.board[r][c] = newCol[r];
 
         const tile = document.getElementById(`${r}-${c}`);
-        const num = this.board[r][c];
 
-        this.updateTile(tile, num);
+        this.updateTile(tile, newCol[r]);
       }
     }
 
-    this.getStatus();
+    if (moved) {
+      this.afterMove();
+    }
   }
+
   moveDown() {
+    let moved = false;
+
     for (let c = 0; c < this.columns; c++) {
-      const row = [
-        this.board[0][c],
-        this.board[1][c],
-        this.board[2][c],
-        this.board[3][c],
-      ];
-
-      row.reverse();
-
-      const newRow = this.slide(row);
-
-      newRow.reverse();
+      const oldCol = [];
 
       for (let r = 0; r < this.rows; r++) {
-        this.board[r][c] = newRow[r];
+        oldCol.push(this.board[r][c]);
+      }
+
+      const reversed = [...oldCol].reverse();
+      const newCol = this.slide(reversed).reverse();
+
+      for (let r = 0; r < this.rows; r++) {
+        if (!moved && this.board[r][c] !== newCol[r]) {
+          moved = true;
+        }
+        this.board[r][c] = newCol[r];
 
         const tile = document.getElementById(`${r}-${c}`);
-        const num = this.board[r][c];
 
-        this.updateTile(tile, num);
+        this.updateTile(tile, newCol[r]);
       }
     }
 
+    if (moved) {
+      this.afterMove();
+    }
+  }
+
+  afterMove() {
+    this.setTwo();
+    this.getScore();
     this.getStatus();
   }
 
@@ -197,7 +221,9 @@ class Game {
   /**
    * @returns {number[][]}
    */
-  getState() {}
+  getState() {
+    return this.board.map((row) => [...row]);
+  }
 
   /**
    * Returns the current game status.
