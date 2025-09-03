@@ -21,6 +21,7 @@ class Game {
     this.renderBoard();
     this.status = 'idle';
     this.initControls();
+    this.setTwo();
 
     document.addEventListener('keyup', (e) => {
       let moved = false;
@@ -62,8 +63,6 @@ class Game {
         this.updateTile(tile, num);
       }
     }
-
-    this.setTwo();
   }
 
   updateTile(tile, num) {
@@ -299,6 +298,7 @@ class Game {
 
   start() {
     this.status = 'playing';
+    this.setTwo();
     this.renderBoard();
     this.getScore();
   }
