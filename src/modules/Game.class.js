@@ -21,9 +21,12 @@ class Game {
     this.renderBoard();
     this.status = 'idle';
     this.initControls();
-    this.setTwo();
 
     document.addEventListener('keyup', (e) => {
+      if (this.status !== 'playing') {
+        return;
+      }
+
       let moved = false;
 
       switch (e.code) {
